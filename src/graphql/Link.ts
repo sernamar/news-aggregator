@@ -1,4 +1,4 @@
-import { extendType, objectType } from "nexus";
+import { extendType, nonNull, objectType, stringArg } from "nexus";
 import { NexusGenObjects } from "../../nexus-typegen";
 
 export const Link = objectType({
@@ -33,6 +33,33 @@ export const LinkQuery = extendType({
       // this is the resolver function of the "feed" query
       resolve(parent, args, context, info) {
         return links;
+      },
+    });
+  },
+});
+
+// extend to "Mutation" root type, creating a mutation called "post" for adding new links
+export const LinkMutation = extendType({
+  type: "Mutation",
+  definition(t) {
+    t.nonNull.field("post", {
+      type: "Link",
+      args: {
+        description: nonNull(stringArg()),
+        url: nonNull(stringArg()),
+      },
+
+      resolve(parent, args, context) {
+        const { description, url } = args;
+
+        const idCount = links.length + 1;
+        const link = {
+          id: idCount,
+          description: description,
+          url: url,
+        };
+        links.push(link);
+        return link;
       },
     });
   },
