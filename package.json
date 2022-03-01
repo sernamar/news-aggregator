@@ -1,0 +1,29 @@
+{
+  "name": "hackernews-clone",
+  "version": "1.0.0",
+  "description": "GraphQL API for a Hacker News clone",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://sernamar@github.com/sernamar/hackernews-clone.git"
+  },
+  "keywords": [],
+  "author": "Sergio Navarro <sernamar@pm.me>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sernamar/hackernews-clone/issues"
+  },
+  "homepage": "https://github.com/sernamar/hackernews-clone#readme",
+  "devDependencies": {
+    "ts-node-dev": "^1.1.8",
+    "typescript": "^4.6.2"
+  },
+  "dependencies": {
+    "apollo-server": "^3.6.3",
+    "graphql": "^15.8.0",
+    "nexus": "^1.2.0"
+  }
+}
