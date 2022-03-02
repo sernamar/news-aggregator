@@ -2,9 +2,146 @@
 GraphQL API for a Hacker News clone
 
 ** How to use the GraphQL API
-*** /feed/ query
+*** How to create a new ~User~:
 #+begin_src graphql
-  query ExampleQuery {
+  mutation {
+    signup(name: "Alice", email: "alice@prisma.io", password: "graphql") {
+      token
+      user {
+	id
+      }
+    }
+  }
+#+end_src
+We'll get a response like this:
+#+begin_src graphql
+  {
+    "data": {
+      "signup": {
+	"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY0NjIxNTU3MX0.WyNtLIidUzdYPWI5IXhmDLZxewS2WJ5XZwzEZrK7nrw",
+	"user": {
+	  "id": 1
+	}
+      }
+    }
+  }
+#+end_src
+*** How to create a new ~Link~:
+1) Copy the authentication ~token~ we got when creating a new ~User~, and, in the Headers tab in the bottom middle, add a new header. The name of the header will be ~Authorization~ and value will be ~Bearer __TOKEN__~, where ~__TOKEN__~ should be replaced with your auth token. Make sure that the header is enabled by clicking the blue tick mark.
+2) With the Authorization header in place, send the following mutation to your GraphQL server:
+#+begin_src graphql
+  # ... operation
+  mutation ($description: String!, $url: String!) {
+    post(description: $description, url: $url) {
+      id
+      description
+      url
+      postedBy {
+	id
+	name
+	email
+      }
+    }
+  }
+
+  # ... variables
+  {
+    "description": "nexusjs.org",
+    "url": "Code-First GraphQL schemas for JavaScript/TypeScript"
+  }
+#+end_src
+We'll get a response like this:
+#+begin_src graphql
+  {
+    "data": {
+      "post": {
+	"id": 4,
+	"description": "nexusjs.org",
+	"url": "Code-First GraphQL schemas for JavaScript/TypeScript",
+	"postedBy": {
+	  "id": 1,
+	  "name": "Alice",
+	  "email": "alice@prisma.io"
+	}
+      }
+    }
+  }
+#+end_src
+3) To verify everything worked, you can send the following ~login~ mutation, which also requests the links created by the user you created just now. Verify that the ~links~ field contains the link you just created:
+#+begin_src graphql
+  mutation {
+    login(email: "alice@prisma.io", password: "graphql") {
+      token
+      user {
+	email
+	links {
+	  url
+	  description
+	}
+      }
+    }
+  }
+#+end_src
+We'll get a response like this:
+#+begin_src graphql
+  {
+    "data": {
+      "login": {
+	"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY0NjIxNjQ1NH0.sB7-Mz4kpuuPzNDxXvXRPtFtmsGOXm3CFhzWoqpS5sQ",
+	"user": {
+	  "email": "alice@prisma.io",
+	  "links": [
+	    {
+	      "url": "Code-First GraphQL schemas for JavaScript/TypeScript",
+	      "description": "nexusjs.org"
+	    }
+	  ]
+	}
+      }
+    }
+  }
+#+end_src
+4) If you try to create a new link with the Authorization header absent or disabled, you should get an error like this:
+#+begin_src graphql
+  {
+    "errors": [
+      {
+	"message": "Cannot post without logging in.",
+	"locations": [
+	  {
+	    "line": 2,
+	    "column": 3
+	  }
+	],
+	"path": [
+	  "post"
+	],
+	"extensions": {
+	  "code": "INTERNAL_SERVER_ERROR",
+	  "exception": {
+	    "stacktrace": [
+	      "Error: Cannot post without logging in.",
+	      "    at resolve (/home/sernamar/github/hackernews-clone/src/graphql/Link.ts:51:17)",
+	      "    at field.resolve (/home/sernamar/github/hackernews-clone/node_modules/apollo-server-core/src/utils/schemaInstrumentation.ts:106:18)",
+	      "    at resolveField (/home/sernamar/github/hackernews-clone/node_modules/graphql/execution/execute.js:464:18)",
+	      "    at /home/sernamar/github/hackernews-clone/node_modules/graphql/execution/execute.js:261:18",
+	      "    at /home/sernamar/github/hackernews-clone/node_modules/graphql/jsutils/promiseReduce.js:23:10",
+	      "    at Array.reduce (<anonymous>)",
+	      "    at promiseReduce (/home/sernamar/github/hackernews-clone/node_modules/graphql/jsutils/promiseReduce.js:20:17)",
+	      "    at executeFieldsSerially (/home/sernamar/github/hackernews-clone/node_modules/graphql/execution/execute.js:258:37)",
+	      "    at executeOperation (/home/sernamar/github/hackernews-clone/node_modules/graphql/execution/execute.js:236:55)",
+	      "    at executeImpl (/home/sernamar/github/hackernews-clone/node_modules/graphql/execution/execute.js:116:14)"
+	    ]
+	  }
+	}
+      }
+    ],
+    "data": null
+  }
+#+end_src
+*** How to get the ~feed~ (the ~Links~ in the database):
+#+begin_src graphql
+  query {
     feed {
       id
       description
@@ -12,26 +149,32 @@ GraphQL API for a Hacker News clone
     }
   }
 #+end_src
-*** /post/ mutation
+We’ll get a response like this:
 #+begin_src graphql
-  # ... operation
-  mutation ExampleMutation ($description: String!, $url: String!) {
-    post(description: $description, url: $url) {
-      id
-    }
-  }
-
-  # ... variables
-  {
-    "description": "www.prisma.io",
-    "url": "Next-generation Node.js and TypeScript ORM"
-  }
-#+end_src
-Or, without passing the data through variables:
-#+begin_src graphql
-  mutation ExampleMutation {
-    post(url: "www.prisma.io", description: "Next-generation Node.js and TypeScript ORM") {
-      id
-    }
-  }
+   {
+     "data": {
+       "feed": [
+	  {
+	    "id": 1,
+	    "description": "Fullstack tutorial for GraphQL",
+	    "url": "www.howtographql.com"
+	  },
+	  {
+	    "id": 2,
+	    "description": "www.prisma.io",
+	    "url": "Next-generation Node.js and TypeScript ORM"
+	  },
+	  {
+	    "id": 3,
+	    "description": "www.prisma.io",
+	    "url": "Next-generation Node.js and TypeScript ORM"
+	  },
+	  {
+	    "id": 4,
+	    "description": "nexusjs.org",
+	    "url": "Code-First GraphQL schemas for JavaScript/TypeScript"
+	  }
+       ]
+     }
+   }
 #+end_src
