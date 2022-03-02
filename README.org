@@ -143,40 +143,45 @@ We'll get a response like this:
 #+begin_src graphql
   query {
     feed {
-      id
+      createdAt
       description
+      id
       url
     }
   }
 #+end_src
 We’ll get a response like this:
 #+begin_src graphql
-   {
-     "data": {
-       "feed": [
-	  {
-	    "id": 1,
-	    "description": "Fullstack tutorial for GraphQL",
-	    "url": "www.howtographql.com"
-	  },
-	  {
-	    "id": 2,
-	    "description": "www.prisma.io",
-	    "url": "Next-generation Node.js and TypeScript ORM"
-	  },
-	  {
-	    "id": 3,
-	    "description": "www.prisma.io",
-	    "url": "Next-generation Node.js and TypeScript ORM"
-	  },
-	  {
-	    "id": 4,
-	    "description": "nexusjs.org",
-	    "url": "Code-First GraphQL schemas for JavaScript/TypeScript"
-	  }
-       ]
-     }
-   }
+  {
+    "data": {
+      "feed": [
+	{
+	  "createdAt": "2022-03-01T23:41:49.777Z",
+	  "description": "Fullstack tutorial for GraphQL",
+	  "id": 1,
+	  "url": "www.howtographql.com"
+	},
+	{
+	  "createdAt": "2022-03-02T07:23:06.938Z",
+	  "description": "www.prisma.io",
+	  "id": 2,
+	  "url": "Next-generation Node.js and TypeScript ORM"
+	},
+	{
+	  "createdAt": "2022-03-02T07:29:32.105Z",
+	  "description": "www.prisma.io",
+	  "id": 3,
+	  "url": "Next-generation Node.js and TypeScript ORM"
+	},
+	{
+	  "createdAt": "2022-03-02T10:17:48.697Z",
+	  "description": "nexusjs.org",
+	  "id": 4,
+	  "url": "Code-First GraphQL schemas for JavaScript/TypeScript"
+	}
+      ]
+    }
+  }
 #+end_src
 *** How to vote a ~Link:~
 (When executing the following instruction, make sure the Authorization header is enabled and has a valid token)
