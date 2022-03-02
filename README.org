@@ -1,0 +1,37 @@
+* hackernews-clone
+GraphQL API for a Hacker News clone
+
+* Hot to use the GraphQL API
+** /feed/ query
+#+begin_src graphql
+  query ExampleQuery {
+    feed {
+      id
+      description
+      url
+    }
+  }
+#+end_src
+** /post/ mutation
+#+begin_src graphql
+  # ... operation
+  mutation ExampleMutation ($description: String!, $url: String!) {
+    post(description: $description, url: $url) {
+      id
+    }
+  }
+
+  # ... variables
+  {
+    "description": "www.prisma.io",
+    "url": "Next-generation Node.js and TypeScript ORM"
+  }
+#+end_src
+Or, without passing the data through variables:
+#+begin_src graphql
+  mutation ExampleMutation {
+    post(url: "www.prisma.io", description: "Next-generation Node.js and TypeScript ORM") {
+      id
+    }
+  }
+#+end_src
