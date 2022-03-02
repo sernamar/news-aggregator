@@ -1,8 +1,8 @@
 * hackernews-clone
 GraphQL API for a Hacker News clone
 
-* Hot to use the GraphQL API
-** /feed/ query
+** How to use the GraphQL API
+*** /feed/ query
 #+begin_src graphql
   query ExampleQuery {
     feed {
@@ -12,7 +12,7 @@ GraphQL API for a Hacker News clone
     }
   }
 #+end_src
-** /post/ mutation
+*** /post/ mutation
 #+begin_src graphql
   # ... operation
   mutation ExampleMutation ($description: String!, $url: String!) {
