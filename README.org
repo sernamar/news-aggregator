@@ -178,3 +178,36 @@ We’ll get a response like this:
      }
    }
 #+end_src
+*** How to vote a ~Link:~
+(When executing the following instruction, make sure the Authorization header is enabled and has a valid token)
+#+begin_src graphql
+  mutation {
+    vote(linkId: 4) {
+      link {
+	url
+	description
+      }
+      user {
+	name
+	email
+      }
+    }
+  }
+#+end_src
+We’ll get a response like this:
+#+begin_src graphql
+  {
+    "data": {
+      "vote": {
+	"link": {
+	  "url": "Code-First GraphQL schemas for JavaScript/TypeScript",
+	  "description": "nexusjs.org"
+	},
+	"user": {
+	  "name": "Alice",
+	  "email": "alice@prisma.io"
+	}
+      }
+    }
+  }
+#+end_src
