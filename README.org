@@ -4,8 +4,8 @@ GraphQL API for a Hacker News clone
 ** How to use the GraphQL API
 *** How to create a new ~User~:
 #+begin_src graphql
-  mutation {
-    signup(name: "Alice", email: "alice@prisma.io", password: "graphql") {
+  mutation createUser {
+    signup(name: "Alice", email: "alice@mail.com", password: "secret1") {
       token
       user {
 	id
@@ -18,7 +18,7 @@ We'll get a response like this:
   {
     "data": {
       "signup": {
-	"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY0NjIxNTU3MX0.WyNtLIidUzdYPWI5IXhmDLZxewS2WJ5XZwzEZrK7nrw",
+	"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY0NjQwOTkzOH0.fcicF0Pd0zbAQaUEkxMXlG1Jl0cxYJD3E-EGThL8NJA",
 	"user": {
 	  "id": 1
 	}
@@ -31,7 +31,7 @@ We'll get a response like this:
 2) With the Authorization header in place, send the following mutation to your GraphQL server:
 #+begin_src graphql
   # ... operation
-  mutation ($description: String!, $url: String!) {
+  mutation addLink ($description: String!, $url: String!) {
     post(description: $description, url: $url) {
       id
       description
@@ -46,8 +46,8 @@ We'll get a response like this:
 
   # ... variables
   {
-    "description": "nexusjs.org",
-    "url": "Code-First GraphQL schemas for JavaScript/TypeScript"
+    "description": "My first post",
+    "url": "alice.com"
   }
 #+end_src
 We'll get a response like this:
@@ -55,13 +55,13 @@ We'll get a response like this:
   {
     "data": {
       "post": {
-	"id": 4,
-	"description": "nexusjs.org",
-	"url": "Code-First GraphQL schemas for JavaScript/TypeScript",
+	"id": 1,
+	"description": "My first post",
+	"url": "alice.com",
 	"postedBy": {
 	  "id": 1,
 	  "name": "Alice",
-	  "email": "alice@prisma.io"
+	  "email": "alice@mail.com"
 	}
       }
     }
@@ -69,31 +69,41 @@ We'll get a response like this:
 #+end_src
 3) To verify everything worked, you can send the following ~login~ mutation, which also requests the links created by the user you created just now. Verify that the ~links~ field contains the link you just created:
 #+begin_src graphql
-  mutation {
-    login(email: "alice@prisma.io", password: "graphql") {
+  mutation loginAgain {
+    login(email: "alice@mail.com", password: "secret1") {
       token
       user {
 	email
 	links {
 	  url
-	  description
+	  description          
 	}
       }
+
     }
   }
 #+end_src
 We'll get a response like this:
 #+begin_src graphql
+
   {
     "data": {
       "login": {
-	"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY0NjIxNjQ1NH0.sB7-Mz4kpuuPzNDxXvXRPtFtmsGOXm3CFhzWoqpS5sQ",
+	"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY0NjQxMDc0Nn0.9ggyjwiCGDheu5Iy-uH6ccJD5-lej6DD0vR0KVkb32g",
 	"user": {
-	  "email": "alice@prisma.io",
+	  "email": "alice@mail.com",
 	  "links": [
 	    {
-	      "url": "Code-First GraphQL schemas for JavaScript/TypeScript",
-	      "description": "nexusjs.org"
+	      "url": "alice.com/1",
+	      "description": "My first post"
+	    },
+	    {
+	      "url": "alice.com/2",
+	      "description": "My second post"
+	    },
+	    {
+	      "url": "alice.com/3",
+	      "description": "My third (and last) post"
 	    }
 	  ]
 	}
@@ -110,7 +120,7 @@ We'll get a response like this:
 	"locations": [
 	  {
 	    "line": 2,
-	    "column": 3
+	    "column": 5
 	  }
 	],
 	"path": [
@@ -121,7 +131,7 @@ We'll get a response like this:
 	  "exception": {
 	    "stacktrace": [
 	      "Error: Cannot post without logging in.",
-	      "    at resolve (/home/sernamar/github/hackernews-clone/src/graphql/Link.ts:51:17)",
+	      "    at resolve (/home/sernamar/github/hackernews-clone/src/graphql/Link.ts:118:17)",
 	      "    at field.resolve (/home/sernamar/github/hackernews-clone/node_modules/apollo-server-core/src/utils/schemaInstrumentation.ts:106:18)",
 	      "    at resolveField (/home/sernamar/github/hackernews-clone/node_modules/graphql/execution/execute.js:464:18)",
 	      "    at /home/sernamar/github/hackernews-clone/node_modules/graphql/execution/execute.js:261:18",
@@ -141,12 +151,17 @@ We'll get a response like this:
 #+end_src
 *** How to get the ~feed~ (the ~Links~ in the database):
 #+begin_src graphql
-  query {
+  query getFeed {
     feed {
-      createdAt
-      description
-      id
-      url
+      links {
+	url
+	description
+	postedBy {
+	  name
+	  email
+	}
+      }
+      count
     }
   }
 #+end_src
@@ -154,46 +169,83 @@ We’ll get a response like this:
 #+begin_src graphql
   {
     "data": {
-      "feed": [
-	{
-	  "createdAt": "2022-03-01T23:41:49.777Z",
-	  "description": "Fullstack tutorial for GraphQL",
-	  "id": 1,
-	  "url": "www.howtographql.com"
-	},
-	{
-	  "createdAt": "2022-03-02T07:23:06.938Z",
-	  "description": "www.prisma.io",
-	  "id": 2,
-	  "url": "Next-generation Node.js and TypeScript ORM"
-	},
-	{
-	  "createdAt": "2022-03-02T07:29:32.105Z",
-	  "description": "www.prisma.io",
-	  "id": 3,
-	  "url": "Next-generation Node.js and TypeScript ORM"
-	},
-	{
-	  "createdAt": "2022-03-02T10:17:48.697Z",
-	  "description": "nexusjs.org",
-	  "id": 4,
-	  "url": "Code-First GraphQL schemas for JavaScript/TypeScript"
-	}
-      ]
+      "feed": {
+	"links": [
+	  {
+	    "url": "alice.com/1",
+	    "description": "My first post",
+	    "postedBy": {
+	      "name": "Alice",
+	      "email": "alice@mail.com"
+	    }
+	  },
+	  {
+	    "url": "alice.com/2",
+	    "description": "My second post",
+	    "postedBy": {
+	      "name": "Alice",
+	      "email": "alice@mail.com"
+	    }
+	  },
+	  {
+	    "url": "alice.com/3",
+	    "description": "My third (and last) post",
+	    "postedBy": {
+	      "name": "Alice",
+	      "email": "alice@mail.com"
+	    }
+	  },
+	  {
+	    "url": "bob.io/spam",
+	    "description": "Hey, there. Bob spaming here...",
+	    "postedBy": {
+	      "name": "Bob",
+	      "email": "bob@mail.com"
+	    }
+	  },
+	  {
+	    "url": "bob.io/jokes",
+	    "description": "I was joking!",
+	    "postedBy": {
+	      "name": "Bob",
+	      "email": "bob@mail.com"
+	    }
+	  },
+	  {
+	    "url": "carl.com/pi",
+	    "description": "I like maths",
+	    "postedBy": {
+	      "name": "Carl",
+	      "email": "carl@mail.com"
+	    }
+	  },
+	  {
+	    "url": "carl.com/random",
+	    "description": "I like statistics",
+	    "postedBy": {
+	      "name": "Carl",
+	      "email": "carl@mail.com"
+	    }
+	  }
+	],
+	"count": 7
+      }
     }
   }
 #+end_src
 **** Filtering by description or url (or both):
 #+begin_src graphql
-  query {
-    feed(filter: "nexus") {
-      id
-      description
-      url
-      postedBy {
-	id
-	name
+  query filterFeed {
+    feed (filter: "like") {
+      links {
+	url
+	description
+	postedBy {
+	  name
+	  email
+	}
       }
+      count
     }
   }
 #+end_src
@@ -201,27 +253,43 @@ We’ll get a response like this:
 #+begin_src graphql
   {
     "data": {
-      "feed": [
-	{
-	  "id": 4,
-	  "description": "nexusjs.org",
-	  "url": "Code-First GraphQL schemas for JavaScript/TypeScript",
-	  "postedBy": {
-	    "id": 1,
-	    "name": "Alice"
+      "feed": {
+	"links": [
+	  {
+	    "url": "carl.com/pi",
+	    "description": "I like maths",
+	    "postedBy": {
+	      "name": "Carl",
+	      "email": "carl@mail.com"
+	    }
+	  },
+	  {
+	    "url": "carl.com/random",
+	    "description": "I like statistics",
+	    "postedBy": {
+	      "name": "Carl",
+	      "email": "carl@mail.com"
+	    }
 	  }
-	}
-      ]
+	],
+	"count": 2
+      }
     }
   }
 #+end_src
 **** Pagination:
 #+begin_src graphql
-  query {
-    feed(take: 2, skip: 1) {
-      id
-      description
-      url
+  query paginateFeed {
+    feed(take: 3, skip: 2) {
+      links {
+	url
+	description
+	postedBy {
+	  name
+	  email
+	}
+      }
+      count
     }
   }
 #+end_src
@@ -229,29 +297,51 @@ We’ll get a response like this:
 #+begin_src graphql
   {
     "data": {
-      "feed": [
-	{
-	  "id": 2,
-	  "description": "www.prisma.io",
-	  "url": "Next-generation Node.js and TypeScript ORM"
-	},
-	{
-	  "id": 3,
-	  "description": "www.prisma.io",
-	  "url": "Next-generation Node.js and TypeScript ORM"
-	}
-      ]
+      "feed": {
+	"links": [
+	  {
+	    "url": "alice.com/3",
+	    "description": "My third (and last) post",
+	    "postedBy": {
+	      "name": "Alice",
+	      "email": "alice@mail.com"
+	    }
+	  },
+	  {
+	    "url": "bob.io/spam",
+	    "description": "Hey, there. Bob spaming here...",
+	    "postedBy": {
+	      "name": "Bob",
+	      "email": "bob@mail.com"
+	    }
+	  },
+	  {
+	    "url": "bob.io/jokes",
+	    "description": "I was joking!",
+	    "postedBy": {
+	      "name": "Bob",
+	      "email": "bob@mail.com"
+	    }
+	  }
+	],
+	"count": 7
+      }
     }
   }
 #+end_src
 **** Ordering:
 #+begin_src graphql
-  query {
-    feed(orderBy: [{ createdAt: desc }]) {
-      id
-      createdAt
-      description
-      url
+  query orderedFeed {
+    feed(orderBy: [{createdAt: desc}]) {
+      links {
+	url
+	description
+	postedBy {
+	  name
+	  email
+	}
+      }
+      count
     }
   }
 #+end_src
@@ -259,39 +349,74 @@ We’ll get a response like this:
 #+begin_src graphql
   {
     "data": {
-      "feed": [
-	{
-	  "id": 4,
-	  "createdAt": "2022-03-02T10:17:48.697Z",
-	  "description": "nexusjs.org",
-	  "url": "Code-First GraphQL schemas for JavaScript/TypeScript"
-	},
-	{
-	  "id": 3,
-	  "createdAt": "2022-03-02T07:29:32.105Z",
-	  "description": "www.prisma.io",
-	  "url": "Next-generation Node.js and TypeScript ORM"
-	},
-	{
-	  "id": 2,
-	  "createdAt": "2022-03-02T07:23:06.938Z",
-	  "description": "www.prisma.io",
-	  "url": "Next-generation Node.js and TypeScript ORM"
-	},
-	{
-	  "id": 1,
-	  "createdAt": "2022-03-01T23:41:49.777Z",
-	  "description": "Fullstack tutorial for GraphQL",
-	  "url": "www.howtographql.com"
-	}
-      ]
+      "feed": {
+	"links": [
+	  {
+	    "url": "carl.com/random",
+	    "description": "I like statistics",
+	    "postedBy": {
+	      "name": "Carl",
+	      "email": "carl@mail.com"
+	    }
+	  },
+	  {
+	    "url": "carl.com/pi",
+	    "description": "I like maths",
+	    "postedBy": {
+	      "name": "Carl",
+	      "email": "carl@mail.com"
+	    }
+	  },
+	  {
+	    "url": "bob.io/jokes",
+	    "description": "I was joking!",
+	    "postedBy": {
+	      "name": "Bob",
+	      "email": "bob@mail.com"
+	    }
+	  },
+	  {
+	    "url": "bob.io/spam",
+	    "description": "Hey, there. Bob spaming here...",
+	    "postedBy": {
+	      "name": "Bob",
+	      "email": "bob@mail.com"
+	    }
+	  },
+	  {
+	    "url": "alice.com/3",
+	    "description": "My third (and last) post",
+	    "postedBy": {
+	      "name": "Alice",
+	      "email": "alice@mail.com"
+	    }
+	  },
+	  {
+	    "url": "alice.com/2",
+	    "description": "My second post",
+	    "postedBy": {
+	      "name": "Alice",
+	      "email": "alice@mail.com"
+	    }
+	  },
+	  {
+	    "url": "alice.com/1",
+	    "description": "My first post",
+	    "postedBy": {
+	      "name": "Alice",
+	      "email": "alice@mail.com"
+	    }
+	  }
+	],
+	"count": 7
+      }
     }
   }
 #+end_src
 *** How to vote a ~Link:~
 (When executing the following instruction, make sure the Authorization header is enabled and has a valid token)
 #+begin_src graphql
-  mutation {
+  mutation voteLink {
     vote(linkId: 4) {
       link {
 	url
@@ -310,12 +435,12 @@ We’ll get a response like this:
     "data": {
       "vote": {
 	"link": {
-	  "url": "Code-First GraphQL schemas for JavaScript/TypeScript",
-	  "description": "nexusjs.org"
+	  "url": "bob.io/spam",
+	  "description": "Hey, there. Bob spaming here..."
 	},
 	"user": {
-	  "name": "Alice",
-	  "email": "alice@prisma.io"
+	  "name": "Carl",
+	  "email": "carl@mail.com"
 	}
       }
     }
