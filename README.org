@@ -215,6 +215,35 @@ We’ll get a response like this:
     }
   }
 #+end_src
+**** Pagination:
+#+begin_src graphql
+  query {
+    feed(take: 2, skip: 1) {
+      id
+      description
+      url
+    }
+  }
+#+end_src
+We’ll get a response like this:
+#+begin_src graphql
+  {
+    "data": {
+      "feed": [
+	{
+	  "id": 2,
+	  "description": "www.prisma.io",
+	  "url": "Next-generation Node.js and TypeScript ORM"
+	},
+	{
+	  "id": 3,
+	  "description": "www.prisma.io",
+	  "url": "Next-generation Node.js and TypeScript ORM"
+	}
+      ]
+    }
+  }
+#+end_src
 *** How to vote a ~Link:~
 (When executing the following instruction, make sure the Authorization header is enabled and has a valid token)
 #+begin_src graphql
