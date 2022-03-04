@@ -1,5 +1,14 @@
-import { extendType, intArg, nonNull, objectType, stringArg } from "nexus";
-import { NexusGenObjects } from "../../nexus-typegen";
+import {
+  arg,
+  enumType,
+  extendType,
+  inputObjectType,
+  intArg,
+  list,
+  nonNull,
+  objectType,
+  stringArg,
+} from "nexus";
 
 export const Link = objectType({
   name: "Link",
@@ -27,6 +36,20 @@ export const Link = objectType({
   },
 });
 
+export const LinkOrderByInput = inputObjectType({
+  name: "LinkOrderByInput",
+  definition(t) {
+    t.field("description", { type: Sort });
+    t.field("url", { type: Sort });
+    t.field("createdAt", { type: Sort });
+  },
+});
+
+export const Sort = enumType({
+  name: "Sort",
+  members: ["asc", "desc"],
+});
+
 export const LinkQuery = extendType({
   type: "Query",
   definition(t) {
@@ -36,6 +59,7 @@ export const LinkQuery = extendType({
         filter: stringArg(),
         skip: intArg(),
         take: intArg(),
+        orderBy: arg({ type: list(nonNull(LinkOrderByInput)) }),
       },
       resolve(parent, args, context, info) {
         const where = args.filter
@@ -50,6 +74,9 @@ export const LinkQuery = extendType({
           where,
           skip: args?.skip as number | undefined,
           take: args?.take as number | undefined,
+          orderBy: args?.orderBy as
+            | Prisma.Enumerable<Prisma.LinkOrderByWithRelationInput>
+            | undefined,
         });
       },
     });

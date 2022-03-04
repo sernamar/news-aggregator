@@ -244,6 +244,50 @@ We’ll get a response like this:
     }
   }
 #+end_src
+**** Ordering:
+#+begin_src graphql
+  query {
+    feed(orderBy: [{ createdAt: desc }]) {
+      id
+      createdAt
+      description
+      url
+    }
+  }
+#+end_src
+We’ll get a response like this:
+#+begin_src graphql
+  {
+    "data": {
+      "feed": [
+	{
+	  "id": 4,
+	  "createdAt": "2022-03-02T10:17:48.697Z",
+	  "description": "nexusjs.org",
+	  "url": "Code-First GraphQL schemas for JavaScript/TypeScript"
+	},
+	{
+	  "id": 3,
+	  "createdAt": "2022-03-02T07:29:32.105Z",
+	  "description": "www.prisma.io",
+	  "url": "Next-generation Node.js and TypeScript ORM"
+	},
+	{
+	  "id": 2,
+	  "createdAt": "2022-03-02T07:23:06.938Z",
+	  "description": "www.prisma.io",
+	  "url": "Next-generation Node.js and TypeScript ORM"
+	},
+	{
+	  "id": 1,
+	  "createdAt": "2022-03-01T23:41:49.777Z",
+	  "description": "Fullstack tutorial for GraphQL",
+	  "url": "www.howtographql.com"
+	}
+      ]
+    }
+  }
+#+end_src
 *** How to vote a ~Link:~
 (When executing the following instruction, make sure the Authorization header is enabled and has a valid token)
 #+begin_src graphql
