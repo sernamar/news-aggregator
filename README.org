@@ -183,6 +183,38 @@ We’ll get a response like this:
     }
   }
 #+end_src
+**** Filtering by description or url (or both):
+#+begin_src graphql
+  query {
+    feed(filter: "nexus") {
+      id
+      description
+      url
+      postedBy {
+	id
+	name
+      }
+    }
+  }
+#+end_src
+We’ll get a response like this:
+#+begin_src graphql
+  {
+    "data": {
+      "feed": [
+	{
+	  "id": 4,
+	  "description": "nexusjs.org",
+	  "url": "Code-First GraphQL schemas for JavaScript/TypeScript",
+	  "postedBy": {
+	    "id": 1,
+	    "name": "Alice"
+	  }
+	}
+      ]
+    }
+  }
+#+end_src
 *** How to vote a ~Link:~
 (When executing the following instruction, make sure the Authorization header is enabled and has a valid token)
 #+begin_src graphql

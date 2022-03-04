@@ -27,21 +27,29 @@ export const Link = objectType({
   },
 });
 
-// extend the "Query" root type, adding a new root field called "feed"
 export const LinkQuery = extendType({
   type: "Query",
   definition(t) {
     t.nonNull.list.nonNull.field("feed", {
       type: "Link",
-      // this is the resolver function of the "feed" query
+      args: {
+        filter: stringArg(),
+      },
       resolve(parent, args, context, info) {
-        return context.prisma.link.findMany();
+        const where = args.filter
+          ? {
+              OR: [
+                { description: { contains: args.filter } },
+                { url: { contains: args.filter } },
+              ],
+            }
+          : {};
+        return context.prisma.link.findMany({ where });
       },
     });
   },
 });
 
-// extend to "Mutation" root type, creating a mutation called "post" for adding new links
 export const LinkMutation = extendType({
   type: "Mutation",
   definition(t) {
