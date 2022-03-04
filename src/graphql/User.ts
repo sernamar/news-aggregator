@@ -11,7 +11,7 @@ export const User = objectType({
       resolve(parent, args, context, info) {
         return context.prisma.user
           .findUnique({ where: { id: parent.id } })
-          .links();
+          .link();
       },
     });
     t.nonNull.list.nonNull.field("votes", {
