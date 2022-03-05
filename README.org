@@ -1,6 +1,5 @@
-* hackernews-clone
-GraphQL API for a Hacker News clone
-
+* news-aggregator
+GraphQL API for a news aggregator site
 ** How to use the GraphQL API
 *** How to create a new ~User~:
 #+begin_src graphql
@@ -131,16 +130,16 @@ We'll get a response like this:
 	  "exception": {
 	    "stacktrace": [
 	      "Error: Cannot post without logging in.",
-	      "    at resolve (/home/sernamar/github/hackernews-clone/src/graphql/Link.ts:118:17)",
-	      "    at field.resolve (/home/sernamar/github/hackernews-clone/node_modules/apollo-server-core/src/utils/schemaInstrumentation.ts:106:18)",
-	      "    at resolveField (/home/sernamar/github/hackernews-clone/node_modules/graphql/execution/execute.js:464:18)",
-	      "    at /home/sernamar/github/hackernews-clone/node_modules/graphql/execution/execute.js:261:18",
-	      "    at /home/sernamar/github/hackernews-clone/node_modules/graphql/jsutils/promiseReduce.js:23:10",
+	      "    at resolve (/home/sernamar/github/news-aggregator/src/graphql/Link.ts:118:17)",
+	      "    at field.resolve (/home/sernamar/github/news-aggregator/node_modules/apollo-server-core/src/utils/schemaInstrumentation.ts:106:18)",
+	      "    at resolveField (/home/sernamar/github/news-aggregator/node_modules/graphql/execution/execute.js:464:18)",
+	      "    at /home/sernamar/github/news-aggregator/node_modules/graphql/execution/execute.js:261:18",
+	      "    at /home/sernamar/github/news-aggregator/node_modules/graphql/jsutils/promiseReduce.js:23:10",
 	      "    at Array.reduce (<anonymous>)",
-	      "    at promiseReduce (/home/sernamar/github/hackernews-clone/node_modules/graphql/jsutils/promiseReduce.js:20:17)",
-	      "    at executeFieldsSerially (/home/sernamar/github/hackernews-clone/node_modules/graphql/execution/execute.js:258:37)",
-	      "    at executeOperation (/home/sernamar/github/hackernews-clone/node_modules/graphql/execution/execute.js:236:55)",
-	      "    at executeImpl (/home/sernamar/github/hackernews-clone/node_modules/graphql/execution/execute.js:116:14)"
+	      "    at promiseReduce (/home/sernamar/github/news-aggregator/node_modules/graphql/jsutils/promiseReduce.js:20:17)",
+	      "    at executeFieldsSerially (/home/sernamar/github/news-aggregator/node_modules/graphql/execution/execute.js:258:37)",
+	      "    at executeOperation (/home/sernamar/github/news-aggregator/node_modules/graphql/execution/execute.js:236:55)",
+	      "    at executeImpl (/home/sernamar/github/news-aggregator/node_modules/graphql/execution/execute.js:116:14)"
 	    ]
 	  }
 	}

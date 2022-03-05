@@ -1,7 +1,7 @@
 {
-  "name": "hackernews-clone",
+  "name": "news-aggregator",
   "version": "1.0.0",
-  "description": "GraphQL API for a Hacker News clone",
+  "description": "GraphQL API for a news aggregator site",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -10,15 +10,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://sernamar@github.com/sernamar/hackernews-clone.git"
+    "url": "git+https://sernamar@github.com/sernamar/news-aggregator.git"
   },
   "keywords": [],
   "author": "Sergio Navarro <sernamar@pm.me>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sernamar/hackernews-clone/issues"
+    "url": "https://github.com/sernamar/news-aggregator/issues"
   },
-  "homepage": "https://github.com/sernamar/hackernews-clone#readme",
+  "homepage": "https://github.com/sernamar/news-aggregator#readme",
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
     "@types/jsonwebtoken": "^8.5.8",
